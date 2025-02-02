@@ -4,14 +4,15 @@ const VSHADER_SOURCE = `
 	void main() {
 		gl_Position = a_Position;
 		gl_PointSize = u_Size;
-	}`;
-
+	}
+`;
 const FSHADER_SOURCE = `
 	precision mediump float;
 	uniform vec4 u_FragColor;
 	void main() {
 		gl_FragColor = u_FragColor;
-	}`;
+	}
+`;
 
 let canvas;
 let gl;
@@ -20,14 +21,12 @@ let u_Size;
 let u_FragColor;
 
 function getCanvasAndContext() {
-	canvas = document.getElementById('webgl');
-	gl = canvas.getContext("webgl", {
-		preserveDrawingBuffer: true,
-		premultipliedAlpha: false		// learned I need to do this for alpha to work from https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
-	});
+	canvas = document.getElementById("webgl");
+	gl = canvas.getContext("webgl", { preserveDrawingBuffer: true });
 	if (!gl) {
 		throw new Error("Failed to get the rendering context for WebGL");
 	}
+	gl.enable(gl.DEPTH_TEST);
 }
 
 function compileShadersAndConnectVariables() {
@@ -51,80 +50,21 @@ function compileShadersAndConnectVariables() {
 	}
 }
 
-const POINT = 0;
-const TRIANGLE = 1;
-const CIRCLE = 2;
-let g_selectedShape = POINT;
-const g_selectedColor = [1.0, 1.0, 1.0, 1.0];		// white
-let g_selectedSize = 5;
-let g_selectedCircleSegments = 10;
-function createUIEvents() {
-	document.getElementById("pointButton").onclick = function() { g_selectedShape = POINT; };
-	document.getElementById("triangleButton").onclick = function() { g_selectedShape = TRIANGLE; };
-	document.getElementById("circleButton").onclick = function() { g_selectedShape = CIRCLE; };
-	document.getElementById("drawImageButton").onclick = function() {
-		const image = new Image();
-		image.alpha = g_selectedColor[3];
-		g_shapesList.push(image);
-		render();
-	};
-	document.getElementById("clearButton").onclick = function() {
-		g_shapesList = [];
-		render();
-	};
-	document.getElementById("slider_r").addEventListener("mouseup", function() { g_selectedColor[0] = this.value / 100; });
-	document.getElementById("slider_g").addEventListener("mouseup", function() { g_selectedColor[1] = this.value / 100; });
-	document.getElementById("slider_b").addEventListener("mouseup", function() { g_selectedColor[2] = this.value / 100; });
-	document.getElementById("slider_a").addEventListener("mouseup", function() { g_selectedColor[3] = this.value / 100; });
-	document.getElementById("slider_size").addEventListener("mouseup", function() { g_selectedSize = this.value; });
-	document.getElementById("slider_cirSeg").addEventListener("mouseup", function() { g_selectedCircleSegments = this.value; });
-}
-
 function main() {
 	getCanvasAndContext();
 	compileShadersAndConnectVariables();
-	createUIEvents();
-	canvas.onmousedown = handleClick;
-	canvas.onmousemove = function(e) { if (e.buttons === 1) { handleClick(e) } };
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	renderAllShapes();
 }
 
-let g_shapesList = [];
-function handleClick(e) {
-	const [x, y] = eventCoordsToGL(e);
+function renderAllShapes() {
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-	let shape = null;
-	if (g_selectedShape === POINT) {
-		shape = new Point();
-	}
-	else if (g_selectedShape === TRIANGLE) {
-		shape = new Triangle();
-	}
-	else {
-		shape = new Circle();
-		shape.segments = g_selectedCircleSegments;
-	}
-	shape.pos = [x, y];
-	shape.color = g_selectedColor.slice();
-	shape.size = g_selectedSize;
-	g_shapesList.push(shape);
+	// test triangle
+	drawTriangle3D([-1.0, 0.0, 0.0,		-0.5, -1.0, 0.0,		0.0, 0.0, 0.0]);
 
-	render();
-}
-
-function eventCoordsToGL(e) {
-	let x = e.clientX;
-	let y = e.clientY;
-	const rect = e.target.getBoundingClientRect();
-	x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
-	y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
-	return [x, y];
-}
-
-function render() {
-	gl.clear(gl.COLOR_BUFFER_BIT);
-	for(let i = 0; i < g_shapesList.length; i++) {
-		g_shapesList[i].render();
-	}
+	// test cube
+	const cube = new Cube();
+	cube.color = [1.0, 0.0, 0.0, 1.0];	// red
+	cube.render();
 }
