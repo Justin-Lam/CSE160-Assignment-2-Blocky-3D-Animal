@@ -63,6 +63,7 @@ function compileShadersAndConnectVariables() {
 let g_globalRotation_y = 0;	// y axis
 let g_globalRotation_x = 0;	// x axis
 let g_headRotation = 0;
+let g_headScale = 1;
 let g_animation_enabled_head = false;
 let g_tongueBaseRotation = 0;
 let g_animation_enabled_tongueBase = false;
@@ -73,6 +74,7 @@ let g_leg_front_rightRotation = 0;
 let g_leg_back_leftRotation = 0;
 let g_leg_back_rightRotation = 0;
 let g_animation_enabled_legs = false;
+let g_interactiveAnimationPlaying = false;
 
 function createUIEvents() {
 	document.getElementById("globalRotationSlider_y").addEventListener("mousemove", function() {
@@ -124,6 +126,12 @@ function main() {
 	compileShadersAndConnectVariables();
 	createUIEvents();
 	canvas.onmousemove = function(e) { if (e.buttons === 1) { rotateCamera(e) } };
+	canvas.onmousedown = function(e) {
+		if (e.shiftKey) {
+			g_interactiveAnimationStartTime = g_elapsedTime;
+			g_interactiveAnimationPlaying = true;
+		}
+	};
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	requestAnimationFrame(tick);
 }
@@ -145,12 +153,26 @@ function eCoordsToGL(e) {
 
 const g_startTime = currentTime();
 let g_elapsedTime = 0;
+const g_interactiveAnimationDuration = 2;
+let g_interactiveAnimationStartTime = 0;
 function currentTime() {
 	return performance.now() / 1000.0;
 }
 function tick() {
 	g_elapsedTime = currentTime() - g_startTime;
-	updateAnimationAngles();
+
+	if (g_interactiveAnimationPlaying) {
+		g_headScale += 0.01;
+		const counter = g_elapsedTime - g_interactiveAnimationStartTime;
+		if (counter >= g_interactiveAnimationDuration) {
+			g_headScale = 1;
+			g_interactiveAnimationPlaying = false;
+		}
+	}
+	else {
+		updateAnimationAngles();
+	}
+
 	renderAllShapes();
 	requestAnimationFrame(tick);
 }
@@ -223,6 +245,7 @@ function renderAllShapes() {
 	head.color = [1, 0.2, 0.8, 1];	// other pink
 	head.matrix.translate(0, 0.15, -0.3);
 	head.matrix.rotate(g_headRotation, 0, 0, 1);
+	head.matrix.scale(g_headScale, g_headScale, g_headScale);
 	const headCoordsMatrix = new Matrix4(head.matrix);
 	head.matrix.scale(0.4, 0.4, 0.4);
 	head.matrix.translate(-0.5, -0.5, 0);
