@@ -300,5 +300,5 @@ function renderAllShapes() {
 	hat.render();
 
 	const duration = performance.now() - startTime;
-	fpsCounter.innerHTML = `ms: ${duration}, fps: ${Math.floor(1000 / duration)}`;
+	fpsCounter.innerHTML = `ms: ${duration}, fps: ${Math.floor(1000 / duration)}`;	// got this formula for fps from ChatGPT
 }
