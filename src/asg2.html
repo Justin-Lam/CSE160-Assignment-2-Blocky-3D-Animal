@@ -16,14 +16,20 @@
 
 	<br>
 	<span>Camera Rotation</span>
-	<input type="range" class="slider" min="0" max="90" value="0" id="globalRotationSlider">
+	<input type="range" class="slider" min="-180" max="180" value="0" id="globalRotationSlider">	
 
 	<br><br><br>
 	<span>Head Rotation</span>
 	<input type="range" class="slider" min="-45" max="45" value="0" id="headRotationSlider">
+	<button id="toggleAnimationButton_Head">Toggle Animation</button>
+	<br>
+	<span>Tongue Rotation</span>
+	<input type="range" class="slider" min="-45" max="45" value="0" id="tongueRotationSlider">
+	<button id="toggleAnimationButton_Tongue">Toggle Animation</button>
 
 	<br><br>
-	<span>Leg Rotation</span>
+	<span>Leg Rotations</span>
+	<button id="toggleAnimationButton_Legs">Toggle Animation</button>
 	<br>
 	<input type="range" class="slider" min="-45" max="45" value="0" id="leg_front_rightRotationSlider">
 	<input type="range" class="slider" min="-45" max="45" value="0" id="leg_front_leftRotationSlider">
