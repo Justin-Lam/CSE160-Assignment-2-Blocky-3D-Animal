@@ -239,4 +239,11 @@ function renderAllShapes() {
 	tongue_tip.matrix.scale(0.2, 0.1, 0.05);
 	tongue_tip.matrix.translate(-0.5, -1, -0.5);
 	tongue_tip.render();
+
+	const hat = new Pyramid();
+	hat.color = [1, 1, 0, 1];	// yellow
+	hat.matrix = new Matrix4(headCoordsMatrix);
+	hat.matrix.translate(-0.125, 0.2, 0.05);
+	hat.matrix.scale(0.25, 0.25, 0.25);
+	hat.render();
 }
