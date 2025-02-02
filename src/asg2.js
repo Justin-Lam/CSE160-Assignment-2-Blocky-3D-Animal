@@ -61,9 +61,37 @@ function compileShadersAndConnectVariables() {
 }
 
 let g_globalRotation = 0;
+let g_headRotation = 0;
+let g_leg_front_leftRotation = 0;
+let g_leg_front_rightRotation = 0;
+let g_leg_back_leftRotation = 0;
+let g_leg_back_rightRotation = 0;
+
 function createUIEvents() {
 	document.getElementById("globalRotationSlider").addEventListener("mousemove", function() {
 		g_globalRotation = this.value;
+		renderAllShapes();
+	});
+
+	document.getElementById("headRotationSlider").addEventListener("mousemove", function() {
+		g_headRotation = this.value;
+		renderAllShapes();
+	});
+
+	document.getElementById("leg_front_leftRotationSlider").addEventListener("mousemove", function() {
+		g_leg_front_leftRotation = this.value;
+		renderAllShapes();
+	});
+	document.getElementById("leg_front_rightRotationSlider").addEventListener("mousemove", function() {
+		g_leg_front_rightRotation = this.value;
+		renderAllShapes();
+	});
+	document.getElementById("leg_back_leftRotationSlider").addEventListener("mousemove", function() {
+		g_leg_back_leftRotation = this.value;
+		renderAllShapes();
+	});
+	document.getElementById("leg_back_rightRotationSlider").addEventListener("mousemove", function() {
+		g_leg_back_rightRotation = this.value;
 		renderAllShapes();
 	});
 }
@@ -91,32 +119,42 @@ function renderAllShapes() {
 
 	const leg_front_left = new Cube();
 	leg_front_left.color = [1, 0, 0, 1];	// red
-	leg_front_left.matrix.translate(0.05, -0.5, 0.1);
-	leg_front_left.matrix.scale(0.2, 0.25, 0.2);
+	leg_front_left.matrix.translate(0.15, -0.2, 0.2);
+	leg_front_left.matrix.rotate(-g_leg_front_leftRotation, 1, 0, 0);
+	leg_front_left.matrix.scale(0.2, 0.3, 0.2);
+	leg_front_left.matrix.translate(-0.5, -1, -0.5);
 	leg_front_left.render();
 
 	const leg_front_right = new Cube();
 	leg_front_right.color = [0, 0, 1, 1];	// blue
-	leg_front_right.matrix.translate(-0.25, -0.5, 0.1);
-	leg_front_right.matrix.scale(0.2, 0.25, 0.2);
+	leg_front_right.matrix.translate(-0.15, -0.2, 0.2);
+	leg_front_right.matrix.rotate(-g_leg_front_rightRotation, 1, 0, 0);
+	leg_front_right.matrix.scale(0.2, 0.3, 0.2);
+	leg_front_right.matrix.translate(-0.5, -1, -0.5);
 	leg_front_right.render();
 
 	const leg_back_left = new Cube();
 	leg_back_left.color = [1, 0, 0, 1];	// red
-	leg_back_left.matrix.translate(0.05, -0.5, 0.9);
-	leg_back_left.matrix.scale(0.2, 0.25, 0.2);
+	leg_back_left.matrix.translate(0.15, -0.2, 0.95);
+	leg_back_left.matrix.rotate(-g_leg_back_leftRotation, 1, 0, 0);
+	leg_back_left.matrix.scale(0.2, 0.3, 0.2);
+	leg_back_left.matrix.translate(-0.5, -1, -0.5);
 	leg_back_left.render();
 
 	const leg_back_right = new Cube();
 	leg_back_right.color = [0, 0, 1, 1];	// blue
-	leg_back_right.matrix.translate(-0.25, -0.5, 0.9);
-	leg_back_right.matrix.scale(0.2, 0.25, 0.2);
+	leg_back_right.matrix.translate(-0.15, -0.2, 0.95);
+	leg_back_right.matrix.rotate(-g_leg_back_rightRotation, 1, 0, 0);
+	leg_back_right.matrix.scale(0.2, 0.3, 0.2);
+	leg_back_right.matrix.translate(-0.5, -1, -0.5);
 	leg_back_right.render();
 
 	const head = new Cube();
 	head.color = [1, 0.2, 0.8, 1];	// pink
-	head.matrix.translate(-0.2, -0.05, -0.3);
+	head.matrix.translate(0, 0.15, -0.3);
+	head.matrix.rotate(-g_headRotation, 0, 0, 1);
 	head.matrix.scale(0.4, 0.4, 0.4);
+	head.matrix.translate(-0.5, -0.5, 0);
 	head.render();
 
 	const eye_left = new Cube();
