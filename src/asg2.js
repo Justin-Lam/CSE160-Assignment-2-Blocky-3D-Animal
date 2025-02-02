@@ -84,15 +84,57 @@ function renderAllShapes() {
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
 	const body = new Cube();
-	body.color = [1.0, 0.0, 0.0, 1.0];	// red
-	body.matrix.translate(-0.25, -0.5, 0);
-	body.matrix.scale(0.5, 1, 0.5);
+	body.color = [1, 0, 0.8, 1];	// pink
+	body.matrix.translate(-0.25, -0.25, 0);
+	body.matrix.scale(0.5, 0.5, 1);
 	body.render();
 
-	const arm_l = new Cube();
-	arm_l.color = [1, 1, 0, 1];	// yellow
-	arm_l.matrix.translate(0.7, 0, 0);
-	arm_l.matrix.rotate(45, 0, 0, 1);
-	arm_l.matrix.scale(0.25, 0.7, 0.5);
-	arm_l.render();
+	const leg_front_left = new Cube();
+	leg_front_left.color = [1, 0, 0, 1];	// red
+	leg_front_left.matrix.translate(0.05, -0.5, 0.1);
+	leg_front_left.matrix.scale(0.2, 0.25, 0.2);
+	leg_front_left.render();
+
+	const leg_front_right = new Cube();
+	leg_front_right.color = [0, 0, 1, 1];	// blue
+	leg_front_right.matrix.translate(-0.25, -0.5, 0.1);
+	leg_front_right.matrix.scale(0.2, 0.25, 0.2);
+	leg_front_right.render();
+
+	const leg_back_left = new Cube();
+	leg_back_left.color = [1, 0, 0, 1];	// red
+	leg_back_left.matrix.translate(0.05, -0.5, 0.9);
+	leg_back_left.matrix.scale(0.2, 0.25, 0.2);
+	leg_back_left.render();
+
+	const leg_back_right = new Cube();
+	leg_back_right.color = [0, 0, 1, 1];	// blue
+	leg_back_right.matrix.translate(-0.25, -0.5, 0.9);
+	leg_back_right.matrix.scale(0.2, 0.25, 0.2);
+	leg_back_right.render();
+
+	const head = new Cube();
+	head.color = [1, 0.2, 0.8, 1];	// pink
+	head.matrix.translate(-0.2, -0.05, -0.3);
+	head.matrix.scale(0.4, 0.4, 0.4);
+	head.render();
+
+	const eye_left = new Cube();
+	eye_left.color = [0, 0, 0, 1];	// black
+	eye_left.matrix.translate(0.05, 0.15, -0.325);
+	eye_left.matrix.scale(0.1, 0.1, 0.1);
+	eye_left.render();
+
+	const eye_right = new Cube();
+	eye_right.color = [0, 0, 0, 1];	// black
+	eye_right.matrix.translate(-0.15, 0.15, -0.325);
+	eye_right.matrix.scale(0.1, 0.1, 0.1);
+	eye_right.render();
+
+	const tongue = new Cube();
+	tongue.color = [1, 0, 0, 1];	// red
+	tongue.matrix.translate(-0.1, 0.0, -0.45);
+	tongue.matrix.rotate(60, 1, 0, 0);
+	tongue.matrix.scale(0.2, 0.2, 0.1);
+	tongue.render();
 }
