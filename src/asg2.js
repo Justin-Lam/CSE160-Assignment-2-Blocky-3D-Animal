@@ -60,7 +60,8 @@ function compileShadersAndConnectVariables() {
 	gl.uniformMatrix4fv(u_GlobalRotationMatrix, false, identity.elements);
 }
 
-let g_globalRotation = 0;
+let g_globalRotation_y = 0;	// y axis
+let g_globalRotation_x = 0;	// x axis
 let g_headRotation = 0;
 let g_animation_enabled_head = false;
 let g_tongueBaseRotation = 0;
@@ -74,8 +75,12 @@ let g_leg_back_rightRotation = 0;
 let g_animation_enabled_legs = false;
 
 function createUIEvents() {
-	document.getElementById("globalRotationSlider").addEventListener("mousemove", function() {
-		g_globalRotation = this.value;
+	document.getElementById("globalRotationSlider_y").addEventListener("mousemove", function() {
+		g_globalRotation_y = this.value;
+		renderAllShapes();
+	});
+	document.getElementById("globalRotationSlider_x").addEventListener("mousemove", function() {
+		g_globalRotation_x = this.value;
 		renderAllShapes();
 	});
 
@@ -118,8 +123,24 @@ function main() {
 	getCanvasAndContext();
 	compileShadersAndConnectVariables();
 	createUIEvents();
+	canvas.onmousemove = function(e) { if (e.buttons === 1) { rotateCamera(e) } };
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	requestAnimationFrame(tick);
+}
+
+
+function rotateCamera(e) {
+	const [x, y] = eCoordsToGL(e);
+	g_globalRotation_y = 180 * x;
+	g_globalRotation_x = 180 * y;
+}
+function eCoordsToGL(e) {
+	let x = e.clientX;
+	let y = e.clientY;
+	const rect = e.target.getBoundingClientRect();
+	x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
+	y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
+	return [x, y];
 }
 
 const g_startTime = currentTime();
@@ -154,7 +175,8 @@ function updateAnimationAngles() {
 
 function renderAllShapes() {
 	const globalRotationMatrix = new Matrix4();
-	globalRotationMatrix.rotate(g_globalRotation, 0, 1, 0);
+	globalRotationMatrix.rotate(g_globalRotation_x, 1, 0, 0);
+	globalRotationMatrix.rotate(-g_globalRotation_y, 0, 1, 0);
 	gl.uniformMatrix4fv(u_GlobalRotationMatrix, false, globalRotationMatrix.elements);
 
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
