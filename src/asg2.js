@@ -153,7 +153,7 @@ function eCoordsToGL(e) {
 
 const g_startTime = currentTime();
 let g_elapsedTime = 0;
-const g_interactiveAnimationDuration = 2;
+const g_interactiveAnimationDuration = 1;
 let g_interactiveAnimationStartTime = 0;
 function currentTime() {
 	return performance.now() / 1000.0;
@@ -162,12 +162,7 @@ function tick() {
 	g_elapsedTime = currentTime() - g_startTime;
 
 	if (g_interactiveAnimationPlaying) {
-		g_headScale += 0.01;
-		const counter = g_elapsedTime - g_interactiveAnimationStartTime;
-		if (counter >= g_interactiveAnimationDuration) {
-			g_headScale = 1;
-			g_interactiveAnimationPlaying = false;
-		}
+		updateInteractiveAnimation();
 	}
 	else {
 		updateAnimationAngles();
@@ -175,6 +170,15 @@ function tick() {
 
 	renderAllShapes();
 	requestAnimationFrame(tick);
+}
+
+function updateInteractiveAnimation() {
+	g_headScale += 0.01;
+	const counter = g_elapsedTime - g_interactiveAnimationStartTime;
+	if (counter >= g_interactiveAnimationDuration) {
+		g_headScale = 1;
+		g_interactiveAnimationPlaying = false;
+	}
 }
 
 function updateAnimationAngles() {
@@ -195,7 +199,10 @@ function updateAnimationAngles() {
 	}
 }
 
+const fpsCounter = document.getElementById("fpsCounter");
 function renderAllShapes() {
+	const startTime = performance.now();
+
 	const globalRotationMatrix = new Matrix4();
 	globalRotationMatrix.rotate(g_globalRotation_x, 1, 0, 0);
 	globalRotationMatrix.rotate(-g_globalRotation_y, 0, 1, 0);
@@ -291,4 +298,7 @@ function renderAllShapes() {
 	hat.matrix.translate(-0.125, 0.2, 0.05);
 	hat.matrix.scale(0.25, 0.25, 0.25);
 	hat.render();
+
+	const duration = performance.now() - startTime;
+	fpsCounter.innerHTML = `ms: ${duration}, fps: ${Math.floor(1000 / duration)}`;
 }
