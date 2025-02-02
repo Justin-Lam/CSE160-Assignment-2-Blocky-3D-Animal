@@ -63,8 +63,10 @@ function compileShadersAndConnectVariables() {
 let g_globalRotation = 0;
 let g_headRotation = 0;
 let g_animation_enabled_head = false;
-let g_tongueRotation = 0;
-let g_animation_enabled_tongue = false;
+let g_tongueBaseRotation = 0;
+let g_animation_enabled_tongueBase = false;
+let g_tongueTipRotation = 0;
+let g_animation_enabled_tongueTip = false;
 let g_leg_front_leftRotation = 0;
 let g_leg_front_rightRotation = 0;
 let g_leg_back_leftRotation = 0;
@@ -82,11 +84,16 @@ function createUIEvents() {
 		renderAllShapes();
 	});
 	document.getElementById("toggleAnimationButton_Head").onclick = () => g_animation_enabled_head = !g_animation_enabled_head;
-	document.getElementById("tongueRotationSlider").addEventListener("mousemove", function() {
-		g_tongueRotation = this.value;
+	document.getElementById("tongueBaseRotationSlider").addEventListener("mousemove", function() {
+		g_tongueBaseRotation = this.value;
 		renderAllShapes();
 	});
-	document.getElementById("toggleAnimationButton_Tongue").onclick = () => g_animation_enabled_tongue = !g_animation_enabled_tongue;
+	document.getElementById("toggleAnimationButton_TongueBase").onclick = () => g_animation_enabled_tongueBase = !g_animation_enabled_tongueBase;
+	document.getElementById("tongueTipRotationSlider").addEventListener("mousemove", function() {
+		g_tongueTipRotation = this.value;
+		renderAllShapes();
+	});
+	document.getElementById("toggleAnimationButton_TongueTip").onclick = () => g_animation_enabled_tongueTip = !g_animation_enabled_tongueTip;
 
 	document.getElementById("leg_front_leftRotationSlider").addEventListener("mousemove", function() {
 		g_leg_front_leftRotation = this.value;
@@ -131,8 +138,11 @@ function updateAnimationAngles() {
 	if (g_animation_enabled_head) {
 		g_headRotation = 45 * Math.sin(g_elapsedTime);
 	}
-	if (g_animation_enabled_tongue) {
-		g_tongueRotation = 30 * Math.sin(g_elapsedTime * 20);
+	if (g_animation_enabled_tongueBase) {
+		g_tongueBaseRotation = 15 * Math.sin(g_elapsedTime * 20);
+	}
+	if (g_animation_enabled_tongueTip) {
+		g_tongueTipRotation = 30 * Math.sin(g_elapsedTime * 20);
 	}
 	if (g_animation_enabled_legs) {
 		g_leg_front_leftRotation = 45 * Math.sin(g_elapsedTime * 4);
@@ -156,7 +166,7 @@ function renderAllShapes() {
 	body.render();
 
 	const leg_front_left = new Cube();
-	leg_front_left.color = [1, 0, 0, 1];	// red
+	leg_front_left.color = [1, 0.2, 0.8, 1];	// other pink
 	leg_front_left.matrix.translate(0.15, -0.2, 0.2);
 	leg_front_left.matrix.rotate(-g_leg_front_leftRotation, 1, 0, 0);
 	leg_front_left.matrix.scale(0.2, 0.3, 0.2);
@@ -164,7 +174,7 @@ function renderAllShapes() {
 	leg_front_left.render();
 
 	const leg_front_right = new Cube();
-	leg_front_right.color = [0, 0, 1, 1];	// blue
+	leg_front_right.color = [1, 0.2, 0.8, 1];	// other pink
 	leg_front_right.matrix.translate(-0.15, -0.2, 0.2);
 	leg_front_right.matrix.rotate(-g_leg_front_rightRotation, 1, 0, 0);
 	leg_front_right.matrix.scale(0.2, 0.3, 0.2);
@@ -172,7 +182,7 @@ function renderAllShapes() {
 	leg_front_right.render();
 
 	const leg_back_left = new Cube();
-	leg_back_left.color = [1, 0, 0, 1];	// red
+	leg_back_left.color = [1, 0.2, 0.8, 1];	// other pink
 	leg_back_left.matrix.translate(0.15, -0.2, 0.95);
 	leg_back_left.matrix.rotate(-g_leg_back_leftRotation, 1, 0, 0);
 	leg_back_left.matrix.scale(0.2, 0.3, 0.2);
@@ -180,7 +190,7 @@ function renderAllShapes() {
 	leg_back_left.render();
 
 	const leg_back_right = new Cube();
-	leg_back_right.color = [0, 0, 1, 1];	// blue
+	leg_back_right.color = [1, 0.2, 0.8, 1];	// other pink
 	leg_back_right.matrix.translate(-0.15, -0.2, 0.95);
 	leg_back_right.matrix.rotate(-g_leg_back_rightRotation, 1, 0, 0);
 	leg_back_right.matrix.scale(0.2, 0.3, 0.2);
@@ -188,10 +198,10 @@ function renderAllShapes() {
 	leg_back_right.render();
 
 	const head = new Cube();
-	head.color = [1, 0.2, 0.8, 1];	// pink
+	head.color = [1, 0.2, 0.8, 1];	// other pink
 	head.matrix.translate(0, 0.15, -0.3);
 	head.matrix.rotate(g_headRotation, 0, 0, 1);
-	let headCoordsMatrix = new Matrix4(head.matrix);
+	const headCoordsMatrix = new Matrix4(head.matrix);
 	head.matrix.scale(0.4, 0.4, 0.4);
 	head.matrix.translate(-0.5, -0.5, 0);
 	head.render();
@@ -210,13 +220,23 @@ function renderAllShapes() {
 	eye_right.matrix.scale(0.1, 0.1, 0.1);
 	eye_right.render();
 
-	const tongue = new Cube();
-	tongue.color = [1, 0, 0, 1];	// red
-	tongue.matrix = new Matrix4(headCoordsMatrix);
-	tongue.matrix.translate(0, -0.15, 0.025);
-	tongue.matrix.rotate(g_tongueRotation, 1, 0, 0);
-	tongue.matrix.rotate(60, 1, 0, 0);
-	tongue.matrix.scale(0.2, 0.2, 0.05);
-	tongue.matrix.translate(-0.5, -1, -0.5);
-	tongue.render();
+	const tongue_base = new Cube();
+	tongue_base.color = [1, 0, 0, 1];	// red
+	tongue_base.matrix = new Matrix4(headCoordsMatrix);
+	tongue_base.matrix.translate(0, -0.15, 0.025);
+	tongue_base.matrix.rotate(g_tongueBaseRotation, 1, 0, 0);
+	tongue_base.matrix.rotate(60, 1, 0, 0);
+	const tongueBaseCoordsMatrix = new Matrix4(tongue_base.matrix);
+	tongue_base.matrix.scale(0.2, 0.1, 0.05);
+	tongue_base.matrix.translate(-0.5, -1, -0.5);
+	tongue_base.render();
+
+	const tongue_tip = new Cube();
+	tongue_tip.color = [1, 0, 0, 1];	// red
+	tongue_tip.matrix = new Matrix4(tongueBaseCoordsMatrix);
+	tongue_tip.matrix.translate(0, -0.1, 0);
+	tongue_tip.matrix.rotate(g_tongueTipRotation, 1, 0, 0);
+	tongue_tip.matrix.scale(0.2, 0.1, 0.05);
+	tongue_tip.matrix.translate(-0.5, -1, -0.5);
+	tongue_tip.render();
 }
